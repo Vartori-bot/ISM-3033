@@ -1,0 +1,92 @@
+mkdir weather-dashboard
+cd weather-dashboard
+npm init -y
+npm install express
+const express = require('express');
+const app = express();
+const path = require('path');
+
+// Serve static files (CSS, images, etc.)
+app.use(express.static('public'));
+
+// Create a route to send weather data
+app.get('/weather', (req, res) => {
+  const weatherData = {
+    temperature: 90,
+    description: "Sunny",
+    city: "Fancytown"
+  };
+  res.json(weatherData);
+});
+
+// Serve the front-end HTML
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Set the server to listen on a port
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 20px;
+    }
+    .dashboard {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 30px;
+      width: 300px;
+      margin: auto;
+    }
+    h1 {
+      color: #4caf50;
+    }
+    .temperature {
+      font-size: 40px;
+      color: #ff5722;
+    }
+    .description {
+      font-size: 20px;
+      color: #607d8b;
+    }
+    .city {
+      font-size: 18px;
+      color: #9e9e9e;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h1>Weather Dashboard</h1>
+    <div class="temperature">Loading...</div>
+    <div class="description"></div>
+    <div class="city"></div>
+  </div>
+
+  <script>
+    // Fetch the weather data from the /weather route
+    fetch('/weather')
+      .then(response => response.json())
+      .then(data => {
+        // Display the weather data dynamically
+        document.querySelector('.temperature').textContent = `${data.temperature}°F`;
+        document.querySelector('.description').textContent = data.description;
+        document.querySelector('.city').textContent = `Location: ${data.city}`;
+      })
+      .catch(error => console.error('Error fetching weather data:', error));
+  </script>
+</body>
+</html>
+node server.js
